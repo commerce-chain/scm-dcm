@@ -1,0 +1,13 @@
+{
+  "name": "@betterdata/dcm-contracts",
+  "version": "0.1.0",
+  "private": false,
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "build": "node -e \"const fs=require('node:fs');fs.mkdirSync('dist',{recursive:true});fs.writeFileSync('dist/.keep','stub');console.log('dcm-contracts stub build')\"",
+    "typecheck": "node -e \"console.log('dcm-contracts stub typecheck')\"",
+    "lint": "node -e \"console.log('dcm-contracts stub lint')\""
+  }
+}

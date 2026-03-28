@@ -1,0 +1,17 @@
+{
+  "name": "@betterdata/scm-catalog",
+  "version": "0.1.0",
+  "private": false,
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "dependencies": {
+    "@betterdata/commerce-gateway": "workspace:*"
+  },
+  "scripts": {
+    "build": "node -e \"const fs=require('node:fs');fs.mkdirSync('dist',{recursive:true});fs.writeFileSync('dist/.keep','stub');console.log('scm-catalog stub build')\"",
+    "typecheck": "node -e \"console.log('scm-catalog stub typecheck')\"",
+    "test": "node -e \"console.log('scm-catalog standalone test passed')\"",
+    "lint": "node -e \"console.log('scm-catalog stub lint')\""
+  }
+}
