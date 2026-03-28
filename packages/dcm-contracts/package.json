@@ -2,9 +2,32 @@
   "name": "@betterdata/dcm-contracts",
   "version": "0.1.0",
   "private": false,
+  "license": "Apache-2.0",
   "type": "module",
   "main": "src/index.ts",
   "types": "src/index.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/commerce-chain/scm-dcm",
+    "directory": "packages/dcm-contracts"
+  },
+  "homepage": "https://commercechain.io",
+  "bugs": {
+    "url": "https://github.com/commerce-chain/scm-dcm/issues"
+  },
+  "keywords": [
+    "commerce-chain",
+    "supply-chain",
+    "demand-chain",
+    "enterprise",
+    "loop-engine",
+    "governance",
+    "apache-2",
+    "dcm",
+    "contracts",
+    "types",
+    "demand"
+  ],
   "scripts": {
     "build": "node -e \"const fs=require('node:fs');fs.mkdirSync('dist',{recursive:true});fs.writeFileSync('dist/.keep','stub');console.log('dcm-contracts stub build')\"",
     "typecheck": "node -e \"console.log('dcm-contracts stub typecheck')\"",

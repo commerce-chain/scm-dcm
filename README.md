@@ -1,31 +1,29 @@
-# Commerce Chain — SCM & DCM modules (OSS)
+# commerce-chain / scm-dcm
 
-This repository mirrors the **Supply Chain Management (SCM)** and **Demand Chain Management (DCM)** open-source packages from Better Data’s monorepo (`bd-forge-main`), where they live under `packages/oss/`. In **this** repo they are rooted at:
+**@betterdata/scm-\*** and **@betterdata/dcm-\*** — open-source supply chain and demand chain modules for [Commerce Chain](https://commercechain.io) (CCO), built by [Better Data](https://betterdata.com).
 
-`packages/scm-*` and `packages/dcm-*`
+This repository mirrors packages from `bd-forge-main` under `packages/oss/`. Here they live at `packages/<name>/` (not under `packages/oss/`).
 
-They are the modular kernel for [commercechain.io](https://commercechain.io) — **not** the LLM Commerce Gateway stack (that lives under a separate product line).
-
-## Packages (intended @betterdata scope, Apache-2.0)
+## Packages (Apache-2.0, @betterdata scope)
 
 | Area | Package |
 |------|---------|
 | SCM | `scm-contracts`, `scm-catalog`, `scm-inventory`, `scm-procurement`, `scm-execution` |
-| DCM | `dcm-contracts`, `dcm-demand`, `dcm-orders`, `dcm-returns` |
+| DCM | `dcm-contracts`, `dcm-demand`, `dcm-orders`, `dcm-channels`, `dcm-returns` |
 
-**Note:** `dcm-channels` is specified in the CCO architecture map but is **not yet present** in the source monorepo under `packages/oss/`.  
+`dcm-channels` is currently a **stub** (v0.1.0); full implementation is tracked for a later release.
 
-Loop-runtime packages (`loop-engine`, `loop-preloader`, etc.) remain **proprietary**; shared loop **definitions/events/actors** under `packages/oss/loop-*` are **not** included in this mirror — only the SCM/DCM modules above.
+Loop runtime (`loop-engine`, `loop-preloader`, …) stays **proprietary**. **`packages/oss/loop-*` in the monorepo is not mirrored here.**
 
-## Relationship to `apps/scm`
+## `apps/scm`
 
-The Next.js app at `apps/scm` in `bd-forge-main` is the **composition shell** (UI, routing, deployment). The **publishable OSS surface** for commercechain is these module packages (here under `packages/`), not the `apps/scm` app source tree.
+The Next.js app at `apps/scm` is the **composition shell**. Publishable OSS for commercechain.io is these **workspace packages**, not the app source.
 
-## Build & publish
+## Build & npm
 
-These packages currently declare `workspace:*` dependencies on `@betterdata/shared-db` and `@betterdata/shared-event-bus`. They are **not yet standalone-publishable** on npm until those edges are replaced with stable semver APIs (see audit / gap report).
+Packages may still list **`workspace:*`** dependencies on monorepo-only packages (`shared-db`, `shared-event-bus`, and in `scm-catalog` also `commerce-gateway`). External **`npm install @betterdata/...`** remains blocked until those edges are resolved (see FX3 audit below).
 
-**Source of truth for development:** the internal monorepo; this repo is updated when OSS boundaries and publish gates are met.
+**Development source of truth:** internal monorepo; this repo is synced after OSS packaging work lands.
 
 ## License
 

@@ -27,3 +27,6 @@ export * from "./adapters/pick-optimization.adapter";
 export * from "./adapters/wave-optimization.adapter";
 export * from "./adapters/putaway.adapter";
 export * from "./adapters/cross-dock.adapter";
+
+export { ExecutionLoopParticipant } from "./loop-participation";
+export { ExecutionPreloadContribution } from "./preload-contribution";

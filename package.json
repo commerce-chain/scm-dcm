@@ -1,0 +1,14 @@
+{
+  "name": "commerce-chain-scm-dcm",
+  "private": true,
+  "version": "0.0.0",
+  "description": "@betterdata/scm-* and @betterdata/dcm-* — OSS supply chain and demand chain modules for Commerce Chain (CCO) by Better Data.",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/commerce-chain/scm-dcm"
+  },
+  "workspaces": [
+    "packages/*"
+  ]
+}

@@ -8,6 +8,10 @@ export interface DomainEvent {
   correlationId: string;
   causationId?: string;
   schemaVersion: string;
+  /** Aggregate root ID when the event pertains to a single aggregate (may also appear on payload). */
+  aggregateId?: string;
+  /** Aggregate optimistic-concurrency version at emit time when tracked (may also appear on payload). */
+  version?: number;
 }
 
 export interface DomainCommand {
