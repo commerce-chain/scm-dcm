@@ -1,17 +1,12 @@
 // Copyright (c) Better Data, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { getSharedDbClient } from "@betterdata/shared-db";
 import type {
   ScmInventoryStockReserved,
   ScmInventoryStockReturned,
   ScmInventoryStockUpdated
 } from "@betterdata/scm-contracts";
-import {
-  readChannelMessages,
-  writeOutboxEntry,
-  type PrismaTransactionClient
-} from "@betterdata/shared-event-bus";
+import { getInventoryRuntime, inventoryDb } from "../runtime";
 
 export interface AvailabilityQuery {
   organizationId: string;
@@ -79,7 +74,9 @@ export interface AvailabilityCheckResult {
 
 type DbClient = Record<string, any>;
 type ReturnCondition = ScmInventoryStockReturned["payload"]["condition"];
-type CursorCapableClient = PrismaTransactionClient & {
+type TxClient = Record<string, unknown>;
+
+type CursorCapableClient = TxClient & {
   moduleEventCursor: {
     findUnique: (args: {
       where: { module_channel_organizationId: { module: string; channel: string; organizationId: string } };
@@ -96,7 +93,7 @@ type CursorCapableClient = PrismaTransactionClient & {
 };
 
 function db(): DbClient {
-  return getSharedDbClient() as DbClient;
+  return inventoryDb() as DbClient;
 }
 
 export class StockService {
@@ -111,7 +108,7 @@ export class StockService {
     causationId: string;
   }): Promise<{ quantityOnHand: number; eventType: "scm.inventory.stock_updated.v1" }> {
     const prisma = db();
-    return prisma.$transaction(async (tx: PrismaTransactionClient & DbClient) => {
+    return prisma.$transaction(async (tx: TxClient & DbClient) => {
       const existing = await tx.inventoryItem.findFirst({
         where: { id: params.inventoryItemId, organizationId: params.organizationId },
         select: {
@@ -144,7 +141,7 @@ export class StockService {
         causationId: params.causationId
       };
 
-      await writeOutboxEntry(tx, {
+      await getInventoryRuntime().outbox.write(tx, {
         aggregateType: "scm.inventory",
         aggregateId: updated.id,
         eventType: "scm.inventory.stock_updated.v1",
@@ -165,7 +162,7 @@ export class StockService {
     organizationId: string;
     limit?: number;
   }): Promise<{ processed: number; lastProcessedMessageId: string | null }> {
-    const prisma = db() as DbClient & PrismaTransactionClient & CursorCapableClient;
+    const prisma = db() as DbClient & CursorCapableClient;
     const moduleId = "scm.inventory.returns";
     const channel = "dcm-returns-events";
     const cursor = await prisma.moduleEventCursor.findUnique({
@@ -177,7 +174,7 @@ export class StockService {
         }
       }
     });
-    const messages = await readChannelMessages(
+    const messages = await getInventoryRuntime().readChannelMessages(
       prisma,
       channel,
       cursor?.lastProcessedMessageId ?? undefined,
@@ -230,7 +227,7 @@ export class StockService {
   }
 
   private static async handleReturnReceived(
-    prisma: DbClient & PrismaTransactionClient,
+    prisma: DbClient & TxClient,
     params: {
       organizationId: string;
       rmaId: string;
@@ -243,7 +240,7 @@ export class StockService {
       causationId: string;
     }
   ): Promise<void> {
-    await prisma.$transaction(async (tx: DbClient & PrismaTransactionClient) => {
+    await prisma.$transaction(async (tx: DbClient & TxClient) => {
       const inventoryItem = await tx.inventoryItem.findFirst({
         where: {
           organizationId: params.organizationId,
@@ -266,7 +263,7 @@ export class StockService {
         correlationId: params.correlationId,
         causationId: params.causationId
       };
-      await writeOutboxEntry(tx, {
+      await getInventoryRuntime().outbox.write(tx, {
         aggregateType: "scm.inventory",
         aggregateId: inventoryItem.id,
         eventType: "scm.inventory.stock_returned.v1",
@@ -294,7 +291,7 @@ export class StockService {
           correlationId: params.correlationId,
           causationId: params.causationId
         };
-        await writeOutboxEntry(tx, {
+        await getInventoryRuntime().outbox.write(tx, {
           aggregateType: "scm.inventory",
           aggregateId: inventoryItem.id,
           eventType: "scm.inventory.stock_updated.v1",
@@ -316,7 +313,7 @@ export class StockService {
           correlationId: params.correlationId,
           causationId: params.causationId
         };
-        await writeOutboxEntry(tx, {
+        await getInventoryRuntime().outbox.write(tx, {
           aggregateType: "scm.inventory",
           aggregateId: inventoryItem.id,
           eventType: "scm.inventory.stock_reserved.v1",
@@ -336,7 +333,7 @@ export class StockService {
           correlationId: params.correlationId,
           causationId: params.causationId
         };
-        await writeOutboxEntry(tx, {
+        await getInventoryRuntime().outbox.write(tx, {
           aggregateType: "scm.inventory",
           aggregateId: inventoryItem.id,
           eventType: "scm.inventory.stock_updated.v1",

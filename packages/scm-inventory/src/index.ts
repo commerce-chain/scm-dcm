@@ -1,6 +1,8 @@
 // Copyright (c) Better Data, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
+export { configureInventoryRuntime } from "./runtime";
+
 export { StockService } from "./services/stock.service";
 export {
   getAvailability,

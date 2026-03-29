@@ -1,0 +1,46 @@
+{
+  "name": "@betterdata/loop-actors",
+  "version": "0.1.0",
+  "private": false,
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "dependencies": {
+    "@betterdata/loop-definitions": "workspace:*",
+    "@betterdata/loop-events": "workspace:*"
+  },
+  "devDependencies": {
+    "@betterdata/dcm-demand": "workspace:*",
+    "@betterdata/dcm-orders": "workspace:*",
+    "@betterdata/dcm-returns": "workspace:*",
+    "@betterdata/scm-catalog": "workspace:*",
+    "@betterdata/scm-execution": "workspace:*",
+    "@betterdata/scm-inventory": "workspace:*",
+    "@betterdata/scm-procurement": "workspace:*",
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.2",
+    "vitest": "^3.0.7"
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "lint": "node -e \"console.log('loop-actors lint')\"",
+    "test": "vitest run",
+    "prepublishOnly": "pnpm build",
+    "sbom": "npx @cyclonedx/cyclonedx-npm --output-format JSON --output-file sbom.json --ignore-npm-errors"
+  }
+}

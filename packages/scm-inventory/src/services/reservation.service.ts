@@ -1,12 +1,14 @@
 // Copyright (c) Better Data, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import type { SharedDbClient } from "@betterdata/shared-db";
 import type {
   ScmInventoryStockReserved,
   ScmInventoryStockReservationFailed
 } from "@betterdata/scm-contracts";
-import { writeOutboxEntry, type PrismaTransactionClient } from "@betterdata/shared-event-bus";
+import { getInventoryRuntime } from "../runtime";
+
+/** Injected DB client (e.g. PrismaClient) — structural typing only. */
+export type InventoryReservationDb = Record<string, unknown>;
 
 export interface SoftReserveRequest {
   organizationId: string;
@@ -112,7 +114,7 @@ const STUB_ERROR = new Error(
 
 export class ReservationService {
   static async createSoftReservation(
-    db: SharedDbClient,
+    db: InventoryReservationDb,
     request: SoftReserveRequest
   ): Promise<SoftReserveResponse> {
     if (request.quantity <= 0) {
@@ -126,8 +128,8 @@ export class ReservationService {
     const reservationId = `res_${Date.now()}_${Math.random().toString(16).slice(2, 8)}`;
     const correlationId = request.correlationId ?? request.idempotencyKey ?? reservationId;
     const causationId = request.causationId ?? "reservation_attempt";
-    const txDb = db as SharedDbClient & {
-      $transaction: <T>(fn: (tx: SharedDbClient & PrismaTransactionClient & Record<string, any>) => Promise<T>) => Promise<T>;
+    const txDb = db as InventoryReservationDb & {
+      $transaction: <T>(fn: (tx: InventoryReservationDb & Record<string, unknown>) => Promise<T>) => Promise<T>;
     };
 
     return txDb.$transaction(async (tx) => {
@@ -153,7 +155,7 @@ export class ReservationService {
           correlationId,
           causationId
         };
-        await writeOutboxEntry(tx, {
+        await getInventoryRuntime().outbox.write(tx, {
           aggregateType: "scm.inventory",
           aggregateId: request.productMasterId,
           eventType: "scm.inventory.stock_reservation_failed.v1",
@@ -188,7 +190,7 @@ export class ReservationService {
         correlationId,
         causationId
       };
-      await writeOutboxEntry(tx, {
+      await getInventoryRuntime().outbox.write(tx, {
         aggregateType: "scm.inventory",
         aggregateId: request.productMasterId,
         eventType: "scm.inventory.stock_reserved.v1",
@@ -208,7 +210,7 @@ export class ReservationService {
   }
 
   static async confirmSoftReservation(
-    _db: SharedDbClient,
+    _db: InventoryReservationDb,
     _reservationId: string,
     _organizationId: string,
     _userId?: string
@@ -217,35 +219,35 @@ export class ReservationService {
   }
 
   static async convertToHardReservation(
-    _db: SharedDbClient,
+    _db: InventoryReservationDb,
     _request: ConvertToHardRequest
   ): Promise<ConvertToHardResponse> {
     throw STUB_ERROR;
   }
 
   static async releaseSoftReservation(
-    _db: SharedDbClient,
+    _db: InventoryReservationDb,
     _request: ReleaseRequest
   ): Promise<ReleaseResponse> {
     throw STUB_ERROR;
   }
 
   static async releaseExpiredReservations(
-    _db: SharedDbClient,
+    _db: InventoryReservationDb,
     _organizationId: string
   ): Promise<BulkReleaseResponse> {
     throw STUB_ERROR;
   }
 
   static async bulkRelease(
-    _db: SharedDbClient,
+    _db: InventoryReservationDb,
     _request: BulkReleaseRequest
   ): Promise<BulkReleaseResponse> {
     throw STUB_ERROR;
   }
 
   static async getReservation(
-    _db: SharedDbClient,
+    _db: InventoryReservationDb,
     _reservationId: string,
     _organizationId: string
   ): Promise<{
@@ -264,7 +266,7 @@ export class ReservationService {
   }
 
   static async getActiveReservations(
-    _db: SharedDbClient,
+    _db: InventoryReservationDb,
     _organizationId: string,
     _productMasterId: string,
     _locationId: string

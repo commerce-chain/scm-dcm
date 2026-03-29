@@ -6,12 +6,11 @@ import type {
   ScmExecutionReceiptScheduled,
   ScmProcurementPoConfirmed
 } from "@betterdata/scm-contracts";
-import {
-  readChannelMessages,
-  writeOutboxEntry,
-  type EventChannelMessage,
-  type PrismaTransactionClient
-} from "@betterdata/shared-event-bus";
+import type { EventChannelMessageRecord } from "@betterdata/scm-contracts";
+import { executionEmitOutbox, getExecutionRuntime } from "../runtime";
+
+type EventChannelMessage = EventChannelMessageRecord;
+type PrismaTransactionClient = Record<string, unknown>;
 
 type DbClient = Record<string, any>;
 
@@ -69,7 +68,7 @@ export class ReceiptPostingService {
       }
     });
 
-    const messages = await readChannelMessages(
+    const messages = await getExecutionRuntime().readChannelMessages(
       prisma as PrismaTransactionClient,
       channel,
       cursor?.lastProcessedMessageId ?? undefined,
@@ -131,7 +130,7 @@ export class ReceiptPostingService {
           destinationLocationId
         }
       };
-      await writeOutboxEntry(tx, {
+      await executionEmitOutbox(tx, {
         aggregateType: "scm.execution",
         aggregateId: purchaseOrderId,
         eventType: event.eventType,
@@ -181,7 +180,7 @@ export class ReceiptPostingService {
           }
         };
 
-        await writeOutboxEntry(tx, {
+        await executionEmitOutbox(tx, {
           aggregateType: "scm.execution",
           aggregateId: params.receiptId,
           eventType: event.eventType,

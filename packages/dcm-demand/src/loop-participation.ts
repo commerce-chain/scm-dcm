@@ -1,28 +1,24 @@
 // Copyright (c) Better Data, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-export type DemandLoopEvent =
-  | "dcm.demand.replenishment_triggered.v1"
-  | "dcm.demand.threshold_breach_detected.v1";
+import { EventNames, LoopIds } from "@betterdata/loop-definitions";
+import type { LoopParticipantManifest } from "@betterdata/loop-definitions";
 
-export type DemandLoopParticipant = {
-  module: "dcm-demand";
-  handles: Array<{
-    event: DemandLoopEvent;
-    loops: string[];
-  }>;
-};
+export type DemandLoopParticipant = LoopParticipantManifest;
 
-export const demandLoopParticipant: DemandLoopParticipant = {
-  module: "dcm-demand",
+export const demandLoopParticipant: LoopParticipantManifest = {
+  moduleId: "dcm.demand",
+  description: "Demand signals and replenishment triggers",
   handles: [
     {
-      event: "dcm.demand.replenishment_triggered.v1",
-      loops: ["dcm.demand"]
+      event: EventNames.DEMAND_REPLENISHMENT_TRIGGERED,
+      loops: [LoopIds.DCM_DEMAND],
+      description: "Propagates replenishment into demand loop orchestration"
     },
     {
-      event: "dcm.demand.threshold_breach_detected.v1",
-      loops: ["dcm.demand"]
+      event: EventNames.DEMAND_THRESHOLD_BREACH_DETECTED,
+      loops: [LoopIds.DCM_DEMAND],
+      description: "Threshold monitoring for demand-driven replenishment"
     }
   ]
 };

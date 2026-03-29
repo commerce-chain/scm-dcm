@@ -7,7 +7,9 @@ import type {
   ScmExecutionShipmentPicked,
   ScmExecutionShipmentShipped
 } from "@betterdata/scm-contracts";
-import { writeOutboxEntry, type PrismaTransactionClient } from "@betterdata/shared-event-bus";
+import { executionEmitOutbox } from "../runtime";
+
+type PrismaTransactionClient = Record<string, unknown>;
 
 type DbClient = Record<string, any>;
 
@@ -49,7 +51,7 @@ export class MovementStatusEngine {
         const occurredAt = new Date().toISOString();
         const maybeEvent = this.toEvent(params, occurredAt);
         if (maybeEvent) {
-          await writeOutboxEntry(tx, {
+          await executionEmitOutbox(tx, {
             aggregateType: "scm.execution",
             aggregateId: params.shipmentId,
             eventType: maybeEvent.eventType,

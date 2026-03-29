@@ -6,7 +6,9 @@ import type {
   DcmReturnsRmaApproved,
   DcmReturnsRmaRejected
 } from "@betterdata/dcm-contracts";
-import { writeOutboxEntry, type PrismaTransactionClient } from "@betterdata/shared-event-bus";
+import { dcmReturnsEmitOutbox } from "../runtime";
+
+type PrismaTransactionClient = Record<string, unknown>;
 
 type DbClient = Record<string, any>;
 type ReturnCondition = DcmReturnReceived["payload"]["condition"];
@@ -49,7 +51,7 @@ export class RmaStateMachineService {
           causationId: params.causationId ?? params.correlationId
         }
       };
-      await writeOutboxEntry(tx, {
+      await dcmReturnsEmitOutbox(tx, {
         aggregateType: "dcm.returns",
         aggregateId: params.rmaId,
         eventType: event.eventType,
@@ -104,7 +106,7 @@ export class RmaStateMachineService {
           causationId: params.causationId ?? params.correlationId
         }
       };
-      await writeOutboxEntry(tx, {
+      await dcmReturnsEmitOutbox(tx, {
         aggregateType: "dcm.returns",
         aggregateId: params.rmaId,
         eventType: event.eventType,
@@ -184,7 +186,7 @@ export class RmaStateMachineService {
           causationId: params.causationId ?? params.correlationId
         }
       };
-      await writeOutboxEntry(tx, {
+      await dcmReturnsEmitOutbox(tx, {
         aggregateType: "dcm.returns",
         aggregateId: params.returnLineId,
         eventType: event.eventType,

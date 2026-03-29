@@ -9,7 +9,8 @@ export interface PermissionCheckResult {
   reason?: string;
 }
 
-export interface ShipmentContext {
+/** Minimal shipment fields used for permission checks (distinct from state-machine ShipmentContext). */
+export interface PermissionShipmentContext {
   id: string;
   organizationId: string;
   status: string;

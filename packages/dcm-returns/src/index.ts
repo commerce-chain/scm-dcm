@@ -1,6 +1,8 @@
 // Copyright (c) Better Data, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
+export { configureDcmReturnsRuntime } from "./runtime";
+
 export * from "./adapters/credit-issuance.adapter";
 export * from "./services/rma-state-machine.service";
 export * from "./services/return-receipt.service";

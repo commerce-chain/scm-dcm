@@ -2,7 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type { DcmOrdersOrderLineAllocationFailed } from "@betterdata/dcm-contracts";
-import { readChannelMessages, writeOutboxEntry, type EventChannelMessage, type PrismaTransactionClient } from "@betterdata/shared-event-bus";
+import type { EventChannelMessageRecord } from "@betterdata/scm-contracts";
+import { dcmOrdersEmitOutbox, getDcmOrdersRuntime } from "../runtime";
+
+type EventChannelMessage = EventChannelMessageRecord;
+type PrismaTransactionClient = Record<string, unknown>;
 
 type DcmOrdersDbClient = Record<string, any>;
 
@@ -41,7 +45,7 @@ export class AllocationResponseService {
         }
       }
     });
-    const messages = await readChannelMessages(
+    const messages = await getDcmOrdersRuntime().readChannelMessages(
       params.prisma,
       channel,
       cursor?.lastProcessedMessageId ?? undefined,
@@ -161,7 +165,7 @@ export class AllocationResponseService {
           causationId: payload.causationId
         }
       };
-      await writeOutboxEntry(tx, {
+      await dcmOrdersEmitOutbox(tx, {
         aggregateType: "dcm.orders",
         aggregateId: payload.orderLineId,
         eventType: allocationFailedEvent.eventType,

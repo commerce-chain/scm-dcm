@@ -7,7 +7,9 @@ import type {
   DcmOrdersOrderLineAllocationRequested,
   DcmOrdersOrderLineShipped
 } from "@betterdata/dcm-contracts";
-import { writeOutboxEntry, type PrismaTransactionClient } from "@betterdata/shared-event-bus";
+import { dcmOrdersEmitOutbox } from "../runtime";
+
+type PrismaTransactionClient = Record<string, unknown>;
 
 export type OrderState =
   | "DRAFT"
@@ -135,7 +137,7 @@ export class OrderStateMachine {
           causationId: input.causationId ?? input.correlationId
         }
       };
-      await writeOutboxEntry(tx, {
+      await dcmOrdersEmitOutbox(tx, {
         aggregateType: "dcm.orders",
         aggregateId: order.id,
         eventType: confirmedEvent.eventType,
@@ -177,7 +179,7 @@ export class OrderStateMachine {
             causationId: confirmedEvent.eventId
           }
         };
-        await writeOutboxEntry(tx, {
+        await dcmOrdersEmitOutbox(tx, {
           aggregateType: "dcm.orders",
           aggregateId: line.id,
           eventType: lineEvent.eventType,
@@ -237,7 +239,7 @@ export class OrderStateMachine {
           causationId: input.causationId ?? input.correlationId
         }
       };
-      await writeOutboxEntry(tx, {
+      await dcmOrdersEmitOutbox(tx, {
         aggregateType: "dcm.orders",
         aggregateId: input.orderLineId,
         eventType: shippedEvent.eventType,
@@ -307,7 +309,7 @@ export class OrderStateMachine {
           causationId: input.causationId ?? input.correlationId
         }
       };
-      await writeOutboxEntry(tx, {
+      await dcmOrdersEmitOutbox(tx, {
         aggregateType: "dcm.orders",
         aggregateId: input.orderId,
         eventType: cancelledEvent.eventType,

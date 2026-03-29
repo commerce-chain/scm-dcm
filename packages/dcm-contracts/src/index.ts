@@ -361,3 +361,6 @@ export type DcmEvent =
   | DcmReturnReceived
   | DcmReturnsReturnRestocked
   | DcmReturnsReturnCredited;
+
+export * from "./adapters.js";
+export { createModuleRuntimeStore } from "@betterdata/scm-contracts";

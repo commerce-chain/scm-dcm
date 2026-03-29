@@ -2,7 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type { ScmProcurementInvoiceMatchTriggered } from "@betterdata/scm-contracts";
-import { writeOutboxEntry, type PrismaTransactionClient } from "@betterdata/shared-event-bus";
+import { procurementEmitOutbox } from "../runtime";
+
+type PrismaTransactionClient = Record<string, unknown>;
 import type { InvoiceMatchingAdapter } from "../adapters/invoice-matching.adapter";
 
 type ProcurementDbClient = Record<string, any>;
@@ -114,7 +116,7 @@ export class InvoicePostingService {
           triggeredBy: userId
         }
       };
-      await writeOutboxEntry(tx, {
+      await procurementEmitOutbox(tx, {
         aggregateType: "scm.procurement",
         aggregateId: invoice.poId,
         eventType: matchEvent.eventType,

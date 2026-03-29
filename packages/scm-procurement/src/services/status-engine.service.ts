@@ -7,7 +7,9 @@ import type {
   ScmProcurementPoConfirmed,
   ScmProcurementPoCreated
 } from "@betterdata/scm-contracts";
-import { writeOutboxEntry, type PrismaTransactionClient } from "@betterdata/shared-event-bus";
+import { procurementEmitOutbox } from "../runtime";
+
+type PrismaTransactionClient = Record<string, unknown>;
 
 export type POHeaderStatus =
   | "PENDING"
@@ -218,7 +220,7 @@ export class POStatusEngine {
           lineCount: payload.lineCount
         }
       };
-      await writeOutboxEntry(tx, {
+      await procurementEmitOutbox(tx, {
         aggregateType: "scm.procurement",
         aggregateId: created.id,
         eventType: event.eventType,
@@ -257,7 +259,7 @@ export class POStatusEngine {
           confirmedBy: payload.actorId
         }
       };
-      await writeOutboxEntry(tx, {
+      await procurementEmitOutbox(tx, {
         aggregateType: "scm.procurement",
         aggregateId: payload.purchaseOrderId,
         eventType: event.eventType,
@@ -296,7 +298,7 @@ export class POStatusEngine {
           amendedFields: payload.amendedFields
         }
       };
-      await writeOutboxEntry(tx, {
+      await procurementEmitOutbox(tx, {
         aggregateType: "scm.procurement",
         aggregateId: payload.purchaseOrderId,
         eventType: event.eventType,
@@ -333,7 +335,7 @@ export class POStatusEngine {
           reason: payload.reason
         }
       };
-      await writeOutboxEntry(tx, {
+      await procurementEmitOutbox(tx, {
         aggregateType: "scm.procurement",
         aggregateId: payload.purchaseOrderId,
         eventType: event.eventType,

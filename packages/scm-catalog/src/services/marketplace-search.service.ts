@@ -1,7 +1,7 @@
 // Copyright (c) Better Data, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import type { Product, SearchQuery, SearchResult, SearchService as ISearchService } from "@betterdata/commerce-gateway";
+import type { Product, SearchQuery, SearchResult, SearchService as ISearchService } from "../types/commerce-gateway-catalog";
 import type {
   RankedListing,
   RankingAdapter,

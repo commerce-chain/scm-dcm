@@ -1,6 +1,8 @@
 // Copyright (c) Better Data, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
+export { configureProcurementRuntime } from "./runtime";
+
 export * from "./services/status-engine.service";
 export * from "./services/permissions.service";
 export * from "./services/product-search.service";

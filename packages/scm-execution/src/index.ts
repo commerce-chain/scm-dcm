@@ -1,6 +1,8 @@
 // Copyright (c) Better Data, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
+export { configureExecutionRuntime } from "./runtime";
+
 export * from "./services/shipment-state-machine.service";
 export * from "./services/movement-status-engine.service";
 export * from "./services/receipt-posting.service";
@@ -28,5 +30,5 @@ export * from "./adapters/wave-optimization.adapter";
 export * from "./adapters/putaway.adapter";
 export * from "./adapters/cross-dock.adapter";
 
-export { ExecutionLoopParticipant } from "./loop-participation";
+export { executionLoopParticipant, ExecutionLoopParticipant } from "./loop-participation";
 export { ExecutionPreloadContribution } from "./preload-contribution";

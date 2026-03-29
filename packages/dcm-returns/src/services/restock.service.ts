@@ -2,7 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type { DcmReturnReceived, DcmReturnsReturnRestocked } from "@betterdata/dcm-contracts";
-import { readChannelMessages, writeOutboxEntry, type PrismaTransactionClient } from "@betterdata/shared-event-bus";
+import type { EventChannelMessageRecord } from "@betterdata/scm-contracts";
+import { dcmReturnsEmitOutbox, getDcmReturnsRuntime } from "../runtime";
+
+type EventChannelMessage = EventChannelMessageRecord;
+type PrismaTransactionClient = Record<string, unknown>;
 
 type DbClient = Record<string, any>;
 type ReturnCondition = DcmReturnReceived["payload"]["condition"];
@@ -41,7 +45,7 @@ export class RestockService {
         }
       }
     });
-    const messages = await readChannelMessages(
+    const messages = await getDcmReturnsRuntime().readChannelMessages(
       params.prisma,
       channel,
       cursor?.lastProcessedMessageId ?? undefined,
@@ -136,7 +140,7 @@ export class RestockService {
           causationId: params.causationId
         }
       };
-      await writeOutboxEntry(tx, {
+      await dcmReturnsEmitOutbox(tx, {
         aggregateType: "dcm.returns",
         aggregateId: line.id,
         eventType: event.eventType,

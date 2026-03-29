@@ -4,8 +4,21 @@
   "private": false,
   "license": "Apache-2.0",
   "type": "module",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/commerce-chain/scm-dcm",
@@ -29,7 +42,8 @@
     "schema"
   ],
   "scripts": {
-    "build": "node -e \"const fs=require('node:fs');fs.mkdirSync('dist',{recursive:true});fs.writeFileSync('dist/.keep','stub');console.log('scm-contracts stub build')\"",
+    "build": "tsup src/index.ts --format esm,cjs --dts --sourcemap --clean --out-dir dist",
+    "prepublishOnly": "pnpm build",
     "typecheck": "node -e \"console.log('scm-contracts stub typecheck')\"",
     "lint": "node -e \"console.log('scm-contracts stub lint')\""
   }

@@ -2,7 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type { DcmReturnsReturnCredited } from "@betterdata/dcm-contracts";
-import { writeOutboxEntry, type PrismaTransactionClient } from "@betterdata/shared-event-bus";
+import { dcmReturnsEmitOutbox } from "../runtime";
+
+type PrismaTransactionClient = Record<string, unknown>;
 import type { CreditIssuanceAdapter } from "../adapters/credit-issuance.adapter";
 
 type DbClient = Record<string, any>;
@@ -57,7 +59,7 @@ export class ReturnCreditService {
           causationId: params.causationId ?? params.correlationId
         }
       };
-      await writeOutboxEntry(tx, {
+      await dcmReturnsEmitOutbox(tx, {
         aggregateType: "dcm.returns",
         aggregateId: params.returnLineId,
         eventType: event.eventType,

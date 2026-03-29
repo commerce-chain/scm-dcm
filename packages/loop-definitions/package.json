@@ -1,0 +1,50 @@
+{
+  "name": "@betterdata/loop-definitions",
+  "version": "0.1.0",
+  "private": false,
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./schema.json": "./schema/loop-definition.schema.json",
+    "./scm": {
+      "types": "./dist/scm/index.d.ts",
+      "import": "./dist/scm/index.js",
+      "require": "./dist/scm/index.cjs"
+    },
+    "./dcm": {
+      "types": "./dist/dcm/index.d.ts",
+      "import": "./dist/dcm/index.js",
+      "require": "./dist/dcm/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "schema",
+    "README.md",
+    "LICENSE"
+  ],
+  "dependencies": {
+    "zod": "^4.1.11"
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "lint": "node -e \"console.log('loop-definitions lint')\"",
+    "test": "vitest run",
+    "prepublishOnly": "pnpm build",
+    "sbom": "npx @cyclonedx/cyclonedx-npm --output-format JSON --output-file sbom.json --ignore-npm-errors"
+  },
+  "devDependencies": {
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.2",
+    "vitest": "^3.0.7"
+  }
+}
