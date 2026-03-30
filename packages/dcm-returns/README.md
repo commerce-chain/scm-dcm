@@ -13,7 +13,18 @@ npm install @betterdata/dcm-returns
 ## Quick start
 
 ```typescript
-import { RmaStateMachineService } from "@betterdata/dcm-returns";
+import {
+  configureDcmReturnsRuntime,
+  RmaStateMachineService,
+  returnsLoopParticipant,
+  processReturnsLoopBatch
+} from "@betterdata/dcm-returns";
+import type { ChannelReader, OutboxWriter } from "@betterdata/scm-contracts";
+
+configureDcmReturnsRuntime({
+  outbox: myOutbox as OutboxWriter,
+  readChannelMessages: myChannelReader as ChannelReader
+});
 
 await RmaStateMachineService.approveRma({
   prisma: {} as never,
@@ -22,7 +33,12 @@ await RmaStateMachineService.approveRma({
   actorId: "user_1",
   correlationId: "corr_1"
 });
+
+console.log(returnsLoopParticipant.moduleId);
+await processReturnsLoopBatch({ prisma: {} as never, organizationId: "org_1" });
 ```
+
+→ [Runtime configuration](https://commercechain.io/docs/getting-started/runtime-configuration)
 
 ## Documentation
 

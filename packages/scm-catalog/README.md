@@ -12,12 +12,23 @@ npm install @betterdata/scm-catalog
 
 ## Quick start
 
+Catalog helpers are mostly stateless factories and resolvers; there is **no** `configureCatalogRuntime` in this release. Use `createMarketplaceSearchService`, `createOfferNormalizerService`, and related exports for integrations.
+
 ```typescript
-import { catalogLoopParticipant, preloadContribution } from "@betterdata/scm-catalog";
+import {
+  catalogLoopParticipant,
+  preloadContribution,
+  createMarketplaceSearchService
+} from "@betterdata/scm-catalog";
 
 const sessionSlice = await preloadContribution("org_1");
-console.log(catalogLoopParticipant.module, sessionSlice.products.length);
+console.log(catalogLoopParticipant.moduleId, sessionSlice.products.length);
+
+const search = createMarketplaceSearchService({} as never);
+void search;
 ```
+
+> **v0.1.0 note:** Channel configuration remains a stub in `@betterdata/dcm-channels`; expand services here as your deployment matures.
 
 ## Documentation
 

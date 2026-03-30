@@ -12,6 +12,8 @@ npm install @betterdata/dcm-channels
 
 ## Quick start
 
+**v0.1.0 stub:** channel routing types and version only—no runtime `configure*` factory yet.
+
 ```typescript
 import {
   DCM_CHANNELS_VERSION,

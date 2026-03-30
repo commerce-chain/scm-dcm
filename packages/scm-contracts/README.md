@@ -44,6 +44,35 @@ declare function handleScmEvent(event: ScmEvent): void;
 handleScmEvent(example);
 ```
 
+## `createModuleRuntimeStore`
+
+Shared helper used inside `@betterdata/scm-*` and `@betterdata/dcm-*` packages to implement `configure*` / `get*` runtime pairs without duplicating singleton logic:
+
+```ts
+import { createModuleRuntimeStore } from "@betterdata/scm-contracts";
+import type { OutboxWriter } from "@betterdata/scm-contracts";
+
+interface MyRuntime {
+  db: unknown;
+  outbox: OutboxWriter;
+}
+
+const store = createModuleRuntimeStore<MyRuntime>(
+  "@betterdata/my-module",
+  "configureMyRuntime({ db, outbox })"
+);
+
+export function configureMyRuntime(runtime: MyRuntime): void {
+  store.configure(runtime);
+}
+
+export function getMyRuntime(): MyRuntime {
+  return store.get();
+}
+```
+
+`OutboxWriter` and related types are exported from this package (see `adapters` exports).
+
 ## Documentation
 
 → https://commercechain.io/docs/scm/overview

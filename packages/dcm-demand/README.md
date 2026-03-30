@@ -12,14 +12,19 @@ npm install @betterdata/dcm-demand
 
 ## Quick start
 
+`@betterdata/dcm-demand` does not yet expose a `configureDemandRuntime` entrypoint. Construct services with your adapters (see `ForecastDataAdapter`, `VelocityDataAdapter`, etc.) and use `demandLoopParticipant` for loop discovery.
+
 ```typescript
-import { ForecastService } from "@betterdata/dcm-demand";
+import { ForecastService, demandLoopParticipant } from "@betterdata/dcm-demand";
 import type { ForecastDataAdapter } from "@betterdata/dcm-demand";
 
 const adapter = {} as ForecastDataAdapter;
 const forecast = new ForecastService(adapter);
 const enabled = await forecast.isForecastingEnabled("org_1");
+console.log(enabled, demandLoopParticipant.moduleId);
 ```
+
+→ [Loop participation](https://commercechain.io/docs/getting-started/loop-participation)
 
 ## Documentation
 

@@ -13,15 +13,34 @@ npm install @betterdata/dcm-orders
 ## Quick start
 
 ```typescript
-import { OrderStateMachine } from "@betterdata/dcm-orders";
+import {
+  configureDcmOrdersRuntime,
+  OrderStateMachine,
+  orderLoopParticipant,
+  processOrderLoopBatch
+} from "@betterdata/dcm-orders";
+import type { ChannelReader, OutboxWriter } from "@betterdata/scm-contracts";
+
+configureDcmOrdersRuntime({
+  outbox: myOutbox as OutboxWriter,
+  readChannelMessages: myChannelReader as ChannelReader
+});
 
 const { orderId } = await OrderStateMachine.createDraftOrder({} as never, {
   organizationId: "org_1",
   correlationId: "corr_1",
   lines: [{ skuId: "sku_1", quantityRequested: 1 }]
 });
-console.log(orderId);
+
+console.log(orderId, orderLoopParticipant.moduleId);
+
+// Optional: worker-style inbox drain (see loop-inbox.ts)
+await processOrderLoopBatch({ prisma: {} as never, organizationId: "org_1" });
 ```
+
+`loop-manifest.ts` holds the participant only; `loop-inbox.ts` holds `processOrderLoopBatch`. Both are re-exported from `loop-participation`.
+
+→ [Runtime configuration](https://commercechain.io/docs/getting-started/runtime-configuration)
 
 ## Documentation
 

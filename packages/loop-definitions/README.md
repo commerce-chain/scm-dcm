@@ -1,77 +1,82 @@
 # @betterdata/loop-definitions
 
-Portable loop definition DSL for any Loop Engine runtime. This package contains loop shapes, canonical SCM/DCM loop definitions, and validation tooling.
+> Canonical loop definitions, loop ID constants, event name constants, and participant types for the Better Data Commerce Chain platform.
 
-Install:
+Part of the [Commerce Chain](https://commercechain.io) open-source framework.
 
-`npm install @betterdata/loop-definitions`
+## Install
 
-Define a loop:
+```bash
+npm install @betterdata/loop-definitions
+```
+
+## What's in this package
+
+Three categories of exports work together with the Zod-validated loop specs, registry protocol, meter units, and compatibility shims:
+
+### Loop IDs
+
+Canonical string constants for every CCO loop:
 
 ```ts
-import type { LoopDefinition } from "@betterdata/loop-definitions";
+import { LoopIds } from "@betterdata/loop-definitions";
 
-const crmLoop: LoopDefinition = {
-  id: "crm.lead-conversion",
-  version: "1.0.0",
-  description: "Lead conversion workflow",
-  domain: "crm",
-  states: ["OPEN", "QUALIFIED", "CLOSED"],
-  initialState: "OPEN",
-  terminalStates: ["CLOSED"],
-  errorStates: [],
-  transitions: [
+// LoopIds.SCM_PROCUREMENT → 'scm.procurement'
+// LoopIds.SCM_FULFILLMENT → 'scm.fulfillment'
+// LoopIds.DCM_ORDER       → 'dcm.order'
+// …see src/loop-ids.ts for the full set
+```
+
+### Event names
+
+Canonical domain event strings (`.v1` suffix convention):
+
+```ts
+import { EventNames } from "@betterdata/loop-definitions";
+
+// EventNames.INVENTORY_STOCK_RESERVED   → 'scm.inventory.stock_reserved.v1'
+// EventNames.EXECUTION_GOODS_RECEIVED   → 'scm.execution.goods_received.v1'
+// …see src/event-names.ts for the full set
+```
+
+### Loop participant types
+
+Normalized manifest shape for module discovery:
+
+```ts
+import type { LoopParticipantManifest } from "@betterdata/loop-definitions";
+```
+
+### Loop definitions
+
+SCM and DCM `LoopDefinition` objects, `LoopRegistry`, JSON Schema at `@betterdata/loop-definitions/schema.json`, and subpaths `@betterdata/loop-definitions/scm` and `/dcm`.
+
+## Quick start
+
+```ts
+import { LoopIds, EventNames } from "@betterdata/loop-definitions";
+import type { LoopParticipantManifest } from "@betterdata/loop-definitions";
+
+const myModuleParticipant: LoopParticipantManifest = {
+  moduleId: "scm.my-module",
+  description: "Handles goods receipt in procurement loops",
+  handles: [
     {
-      id: "qualify",
-      from: "OPEN",
-      to: "QUALIFIED",
-      triggeredBy: "crm.lead.qualified.v1",
-      allowedActors: ["human", "automation", "system"]
+      event: EventNames.EXECUTION_GOODS_RECEIVED,
+      loops: [LoopIds.SCM_PROCUREMENT, LoopIds.SCM_FULFILLMENT],
+      description: "Updates module state on goods receipt"
     }
-  ],
-  outcome: {
-    id: "lead_converted",
-    description: "Lead converted to opportunity",
-    valueUnit: "lead_converted",
-    measurable: true,
-    businessMetrics: [{ id: "conversion_rate", label: "Conversion rate", unit: "percentage", improvableByAI: true }]
-  }
+  ]
 };
 ```
 
-Validate a loop definition:
+## Why constants instead of strings?
 
-```ts
-import { LoopRegistry } from "@betterdata/loop-definitions";
+Domain modules import `LoopIds` and `EventNames` from this package instead of duplicating literals. Participant validation tests in `@betterdata/loop-actors` fail if any shipped manifest references an unknown loop ID or event name—reducing silent drift across releases.
 
-const result = new LoopRegistry().validate({});
-```
+## Documentation
 
-Use canonical definitions:
-
-```ts
-import { scmLoops } from "@betterdata/loop-definitions/scm";
-import { dcmLoops } from "@betterdata/loop-definitions/dcm";
-```
-
-JSON Schema:
-
-- `@betterdata/loop-definitions/schema.json`
-- `packages/oss/loop-definitions/schema/loop-definition.schema.json`
-
-Loop Registry Protocol:
-
-The loop registry protocol defines how Loop Engine runtimes expose their loop catalogs. Better Data's SaaS platform can implement this protocol, and third-party runtimes can implement the same protocol.
-
-Publishing your own loops:
-1. Define loops using `LoopDefinition`
-2. Create a `LoopPackageManifest`
-3. Publish to npm
-4. Register with a compatible runtime
-
-Boundary note:
-
-This package defines loop shapes. It does not execute loops. To execute loops, you need a Loop Engine runtime. Better Data's SaaS platform is one implementation; the definition format is runtime-agnostic.
+→ [Commerce Chain docs](https://commercechain.io/docs/getting-started/loop-participation)
 
 ## License
 

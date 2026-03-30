@@ -12,13 +12,30 @@ npm install @betterdata/scm-inventory
 
 ## Quick start
 
+Wire the module **once** at process startup: there is no global database import. You provide a DB accessor, an `OutboxWriter`, and a `ChannelReader` (see `@betterdata/scm-contracts`). Then call services and helpers exported from this package.
+
 ```typescript
 import {
+  configureInventoryRuntime,
   StockService,
   getAvailability,
-  inventoryLoopParticipant,
-  preloadContribution
+  inventoryLoopParticipant
 } from "@betterdata/scm-inventory";
+import type { ChannelReader, OutboxWriter } from "@betterdata/scm-contracts";
+
+const outbox: OutboxWriter = {
+  async write(_tx, event) {
+    // persist to your outbox / queue
+  }
+};
+
+const readChannelMessages: ChannelReader = async () => [];
+
+configureInventoryRuntime({
+  getDb: () => prisma,
+  outbox,
+  readChannelMessages
+});
 
 await StockService.applyQuantityOnHandChange({
   organizationId: "org_1",
@@ -32,7 +49,11 @@ const lines = await getAvailability({
   organizationId: "org_1",
   productMasterId: "pm_1"
 });
+
+console.log(inventoryLoopParticipant.moduleId);
 ```
+
+→ [Runtime configuration](https://commercechain.io/docs/getting-started/runtime-configuration)
 
 ## Documentation
 

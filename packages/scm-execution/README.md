@@ -14,13 +14,24 @@ npm install @betterdata/scm-execution
 
 ```typescript
 import {
+  configureExecutionRuntime,
   ShipmentStateMachine,
+  executionLoopParticipant,
   ExecutionLoopParticipant
 } from "@betterdata/scm-execution";
+import type { ChannelReader, OutboxWriter } from "@betterdata/scm-contracts";
+
+configureExecutionRuntime({
+  outbox: myOutbox as OutboxWriter,
+  readChannelMessages: myChannelReader as ChannelReader
+});
 
 const allowed = ShipmentStateMachine.canTransition("PICKING", "PICKED");
-console.log(allowed, ExecutionLoopParticipant.moduleId);
+console.log(allowed, executionLoopParticipant.moduleId);
+// ExecutionLoopParticipant is a deprecated alias for the same manifest object
 ```
+
+→ [Runtime configuration](https://commercechain.io/docs/getting-started/runtime-configuration)
 
 ## Documentation
 

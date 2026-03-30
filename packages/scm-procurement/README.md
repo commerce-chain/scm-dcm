@@ -12,8 +12,16 @@ npm install @betterdata/scm-procurement
 
 ## Quick start
 
+Configure runtime wiring once (outbox + channel reader), then use procurement services.
+
 ```typescript
-import { POStatusEngine, procurementLoopParticipant } from "@betterdata/scm-procurement";
+import { configureProcurementRuntime, POStatusEngine, procurementLoopParticipant } from "@betterdata/scm-procurement";
+import type { ChannelReader, OutboxWriter } from "@betterdata/scm-contracts";
+
+configureProcurementRuntime({
+  outbox: myOutbox as OutboxWriter,
+  readChannelMessages: myChannelReader as ChannelReader
+});
 
 const lineStatus = POStatusEngine.computeLineStatus({
   id: "line_1",
@@ -24,8 +32,12 @@ const lineStatus = POStatusEngine.computeLineStatus({
   isCancelled: false
 });
 
-console.log(lineStatus, procurementLoopParticipant.module);
+console.log(lineStatus, procurementLoopParticipant.moduleId);
 ```
+
+`loop-manifest.ts` / `loop-inbox.ts` split: pure `LoopParticipantManifest` lives in `loop-manifest`; `processProcurementLoopBatch` lives in `loop-inbox`. Both are re-exported from `loop-participation` (and the package root) for backward compatibility.
+
+→ [Runtime configuration](https://commercechain.io/docs/getting-started/runtime-configuration)
 
 ## Documentation
 
