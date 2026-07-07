@@ -47,7 +47,7 @@ console.log(lineStatus, procurementLoopParticipant.moduleId);
 
 | Project | Description |
 |---------|-------------|
-| [Loop Engine](https://loopengine.io) | Governed runtime that executes Commerce Chain loops |
+| [Boss Loops](https://loopengine.io) | Governed runtime that executes Commerce Chain loops |
 | [Commerce Gateway](https://commercegateway.io) | LLM-accessible commerce data |
 | [Signal Tags](https://tagd.sh) | Product authentication and traceability |
 

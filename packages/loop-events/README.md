@@ -1,6 +1,6 @@
 # @betterdata/loop-events
 
-Event schema for the Loop Engine runtime. These events are the portable operational and learning surface for analytics, observability, and AI optimization.
+Event schema for the Boss Loops runtime. These events are the portable operational and learning surface for analytics, observability, and AI optimization.
 
 ## Event types
 
